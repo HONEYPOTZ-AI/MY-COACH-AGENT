@@ -63,3 +63,50 @@ Empower individuals to achieve career growth through personalized AI coaching, s
 • AI Layer: OpenAI, Claude, LangChain
 • Infra: Kubernetes + Terraform + GitHub Actions
 • Monitoring: Prometheus + Grafana
+
+☸️ Deploying to GKE, EKS, or AKS with kubeconfig
+You can deploy your Kubernetes manifests to any cloud provider using kubectl and your kubeconfig file. Here's how:
+✅ Steps for All Providers:
+1. Ensure kubectl is installed and configured with your cluster:
+1. kubectl config use-context <your-cluster-context>
+
+2. Apply your manifests:
+2. kubectl apply -f MyCoachAgent_K8s_Manifests/
+
+🔹 For EKS (AWS):
+• Use eksctl to create and manage clusters.
+• AWS EKS kubeconfig setup guide
+🔹 For AKS (Azure):
+• Use az aks get-credentials to configure kubeconfig.
+• Azure AKS deployment guide 1
+🔹 For GKE (Google Cloud):
+• Use gcloud container clusters get-credentials to configure access.
+• GKE deployment guide 1
+⸻
+🔐 Setting Up GitHub Secrets for CI/CD
+To securely store secrets like API keys and kubeconfig:
+1. Go to your GitHub repo → Settings → Secrets and variables → Actions
+2. Click New repository secret
+3. Add secrets like:
+    • KUBE_CONFIG_DATA (base64-encoded kubeconfig)
+    • OPENAI_API_KEY
+    • PINECONE_API_KEY
+    • PINECONE_ENV
+More details: GitHub Secrets Guide 2
+⸻
+🛠️ Debugging FastAPI JWT Authentication
+If your JWT-based login or protected routes are failing:
+• ✅ Ensure python-jose[cryptography] is installed:
+• pip install python-jose[cryptography]
+
+• ✅ Use OAuth2PasswordBearer and Depends properly in your routes.
+• ✅ Validate the token with:
+• payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+• ✅ Return a 401 error if the token is invalid or expired.
+Full working example: FastAPI JWT Guide 3
+⸻
+Would you like help:
+• Encoding your kubeconfig for GitHub secrets?
+• Testing the JWT login and token validation flow?
+• Deploying to a specific cloud provider (GKE, EKS, or AKS)?
