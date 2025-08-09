@@ -106,7 +106,63 @@ If your JWT-based login or protected routes are failing:
 • ✅ Return a 401 error if the token is invalid or expired.
 Full working example: FastAPI JWT Guide 3
 ⸻
-Would you like help:
-• Encoding your kubeconfig for GitHub secrets?
-• Testing the JWT login and token validation flow?
-• Deploying to a specific cloud provider (GKE, EKS, or AKS)?
+☸️ Deploying to GKE, EKS, or AKS Using kubectl
+You can deploy your Kubernetes manifests to any cloud provider using kubectl and a properly configured kubeconfig.
+✅ Steps:
+1. Install kubectl:
+1. curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+2. Configure kubeconfig:
+    • GKE:
+    • gcloud container clusters get-credentials <cluster-name> --zone <zone> --project <project-id>
+
+    • EKS:
+    • aws eks update-kubeconfig --region <region> --name <cluster-name>
+
+    • AKS:
+    • az aks get-credentials --resource-group <resource-group> --name <cluster-name>
+
+3. Deploy manifests:
+3. kubectl apply -f MyCoachAgent_K8s_Manifests/
+
+More details: Azure Pipelines Kubernetes Deployment Guide 1
+⸻
+🔐 Setting Up GitHub Secrets for CI/CD
+To securely deploy via GitHub Actions:
+1. Go to your repo → Settings → Secrets and variables → Actions
+2. Add these secrets:
+    • KUBE_CONFIG_DATA: base64-encoded kubeconfig
+    • OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENV
+To encode your kubeconfig:
+base64 -w 0 ~/.kube/config > KUBE_CONFIG_DATA.txt
+
+⸻
+🛠️ Debugging JWT Authentication
+The FastAPI JWT flow failed due to a missing module:
+pip install python-jose[cryptography]
+
+Once installed, you can:
+• Generate tokens via /token
+• Access protected routes with Authorization: Bearer <token>
+• Validate tokens using jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+✅ The GitHub Actions CI/CD workflow for My Coach Agent has been finalized.
+📁 File Created:
+.github/workflows/ci-cd.yml
+🔧 What It Does:
+• Builds and pushes Docker images for:
+    • frontend → ghcr.io/<your-repo>/frontend:latest
+    • backend → ghcr.io/<your-repo>/backend:latest
+• Uses GitHub Secrets:
+    • KUBE_CONFIG_DATA (base64-encoded kubeconfig)
+    • OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENV
+• Deploys to your Kubernetes cluster using kubectl apply -f k8s/
+⸻
+✅ Next Steps:
+1. Commit and push the .github/workflows/ci-cd.yml file to your main branch.
+2. Add GitHub Secrets under:
+    • Settings → Secrets and variables → Actions
+3. Push any code changes to trigger the pipeline.
+
